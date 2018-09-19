@@ -307,14 +307,19 @@ class CtxtList:
         c = CtxtList(len(self.ctxts_), self.pubkey_)    # carry
         r = CtxtList(len(self.ctxts_), self.pubkey_)    # result
         st = [Stream().Create() for i in range(2*len(self.ctxts_))]
-# Some sort of if, else stament 
 
-  #       r.ctxs_[0].ctxt = p.map(XOR, r.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[0], self.pubkey_)
-  #       c.ctxts_[0].ctx_ = p.map(AND, c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_)
+        Synchronize()
 
-
-  		XOR(r.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[0], self.pubkey_)
-  		AND(c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_)
+  		if use_gpu:
+  			XOR(r.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[0], self.pubkey_)
+  			AND(c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_)
+  		else:
+	  		p1 = Process(target =XOR, args = (r.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[0], self.pubkey_))
+	  		p2 = Process(target =AND, args = (c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_))
+	  		p1.start()
+	  		p2.start()
+	  		p1.join()
+	  		p2.join()
    
         Synchronize()
 #		.........................This is where we would call the two functions an implement them into the pool...................
@@ -322,18 +327,19 @@ class CtxtList:
 			for i in range(1, len(self.ctxts_)):
            		XOR(x.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i], self.pubkey_)
             	AND(y.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i+1], self.pubkey_)
-		else:
+		else:#creates a pool and then put its in a map to compute the for loop
+			p = Pool()
 			p.map(SynchFor, self.ctxts_)
 			p.close()
 			p.join()
-#
 
-       
+
         Synchronize()
         for i in range(1, len(self.ctxts_)):
             AND(z.ctxts_[i-1].ctxt_, x.ctxts_[i].ctxt_, c.ctxts_[i-1].ctxt_, st[0], self.pubkey_)
             XOR(r.ctxts_[i].ctxt_, x.ctxts_[i].ctxt_, c.ctxts_[i-1].ctxt_, st[1], self.pubkey_)
             #aboe two can use a map
+            #we need some way to break this up or somehow figure out a way to make synchronize work for our shit
             Synchronize()
             OR(c.ctxts_[i].ctxt_, z.ctxts_[i-1].ctxt_, y.ctxts_[i].ctxt_, st[0], self.pubkey_)
             Synchronize()
