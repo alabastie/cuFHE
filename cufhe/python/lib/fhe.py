@@ -109,21 +109,21 @@ def Synchronize():
     if use_gpu:
         fhe.Synchronize()
     else:
-    	if (pinit == 1)
-    		p.close()
-    		p.join()
-    		p = Pool()
-    	else:
-    		p = Pool()
+    	# if (pinit == 1)
+    	# 	p.close()
+    	# 	p.join()
+    	# 	p = Pool()
+    	# else:
+    	# 	p = Pool()
         pass
 
 def AND(result, input1, input2, stream=None, pubkey=None):
     if use_gpu:
         fhe.AND(result, input1, input2, stream)
     else:
-    	result1 = p.map(fhe.AND, args=(result, input1, input2, pubkey)) #may need a ctx.
-    	p1.start()
-        #fhe.AND(result, input1, input2, pubkey)
+    	#result1 = p.map(fhe.AND, args=(result, input1, input2, pubkey)) #may need a ctx.
+    	#p1.start()
+        fhe.AND(result, input1, input2, pubkey)
 
 def NAND(result, input1, input2, stream=None, pubkey=None):
     if use_gpu:
@@ -135,9 +135,9 @@ def OR(result, input1, input2, stream=None, pubkey=None):
     if use_gpu:
         fhe.OR(result, input1, input2, stream)
     else:
-    	p3 = process( target = fhe.OR, args = (result, input1, input2, stream))
-        #fhe.OR(result, input1, input2, pubkey)
-        p3.start()
+    	#p3 = process( target = fhe.OR, args = (result, input1, input2, stream))
+        fhe.OR(result, input1, input2, pubkey)
+        #p3.start()
 
 def NOR(result, input1, input2, stream=None, pubkey=None):
     if use_gpu:
@@ -149,9 +149,9 @@ def XOR(result, input1, input2, stream=None, pubkey=None):
     if use_gpu:
         fhe.XOR(result, input1, input2, stream)
     else:
-    	p2 = process(target = fhe.XOR, args = (result, input1, input2, pubkey)) #may need ctx. like the AND
-        #fhe.XOR(result, input1, input2, pubkey)
-        p2.start()
+    	#p2 = process(target = fhe.XOR, args = (result, input1, input2, pubkey)) #may need ctx. like the AND
+        fhe.XOR(result, input1, input2, pubkey)
+        #p2.start()
 
 def XNOR(result, input1, input2, stream=None, pubkey=None):
     if use_gpu:
@@ -317,13 +317,18 @@ class CtxtList:
   		AND(c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_)
    
         Synchronize()
-        pinit = 1 #this is the global variable that lets synch know that there is an active pool already
 #		.........................This is where we would call the two functions an implement them into the pool...................
+		if use_gpu:
+			for i in range(1, len(self.ctxts_)):
+           		XOR(x.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i], self.pubkey_)
+            	AND(y.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i+1], self.pubkey_)
+		else:
+			p.map(SynchFor, self.ctxts_)
+			p.close()
+			p.join()
 #
-        for i in range(1, len(self.ctxts_)):
-            XOR(x.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i], self.pubkey_)
-            AND(y.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i+1], self.pubkey_)
-            #these two can use a map
+
+       
         Synchronize()
         for i in range(1, len(self.ctxts_)):
             AND(z.ctxts_[i-1].ctxt_, x.ctxts_[i].ctxt_, c.ctxts_[i-1].ctxt_, st[0], self.pubkey_)
@@ -333,6 +338,11 @@ class CtxtList:
             OR(c.ctxts_[i].ctxt_, z.ctxts_[i-1].ctxt_, y.ctxts_[i].ctxt_, st[0], self.pubkey_)
             Synchronize()
         return r
+       #--------------------------------My Makeshift For loop for the p.map pool --------------------------------------------
+    def SynchFor(self.ctxts_):
+    	for i in range(1, len(self.ctxts_)):
+            XOR(x.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i], self.pubkey_)
+            AND(y.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i+1], self.pubkey_)
 
 
  #    def __add__(self, other):
