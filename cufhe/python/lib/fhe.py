@@ -183,9 +183,16 @@ class Stream:
 
 
 class Ctxt:
-    def __init__(self, pubkey=None):
+    def __init__(self, pubkey=None, zero = False):
         self.ctxt_ = fhe.Ctxt()
         self.pubkey_ = pubkey
+        if zero:
+        	ctxt_2 = Ctxt(self.pubkey_)
+        	print(self.pubkey_)
+        	print (ctxt_2.pubkey_)
+        	NOT(ctxt_2.ctxt_, self.ctxt_)	#I know that i cant do the .ctxt_2 thing but its just supposed to be a temp variable
+        	print type(self.pubkey_)
+        	AND(self.ctxt_, self.ctxt_, ctxt_2.ctxt_, pubkey = pubkey)
 
     def Decrypt(self, prikey):
         return Decrypt(self, prikey)
@@ -350,6 +357,9 @@ class CtxtList:
             XOR(x.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i], self.pubkey_)
             AND(y.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i+1], self.pubkey_)
 
+def test0 (pubkey_):
+	c = Ctxt(pubkey = pubkey_, zero = True)
+	return c 
 
  #    def __add__(self, other):
  #        k = len(self.ctxts_)

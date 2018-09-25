@@ -39,7 +39,7 @@ fhe.SetSeed()
 
 # Keys
 pubkey, prikey = fhe.KeyGen()
-
+print(pubkey)
 #fhe.StoreKeys(pubkey, prikey)
 fhe.Init(pubkey)
 
@@ -58,131 +58,131 @@ result = c.Decrypt(prikey)
 print m1, " + " , m2, " = ", result
 print elapsed, " sec"
 
-ei1 = [fhe.Encrypt(i, prikey) for i in inputs1]
+# ei1 = [fhe.Encrypt(i, prikey) for i in inputs1]
 
-for circuit in circuits1:
-	for i in range(len(inputs1)):
-		i = inputs1[i]
-		c1 = ei1[i]
-		func = getattr(operator, circuit)
-		start_time = timeit.default_timer()
-		c = func(c1)
-		elapsed_time = timeit.default_timer() - start_time
-		result = c.Decrypt(prikey)
-		passed = "PASS" if (result == (func(i) & 1)) else "FAIL"
-		print "Test " + circuit + ": " + passed
-		print "In " + str(elapsed_time) + " seconds"
+# for circuit in circuits1:
+# 	for i in range(len(inputs1)):
+# 		i = inputs1[i]
+# 		c1 = ei1[i]
+# 		func = getattr(operator, circuit)
+# 		start_time = timeit.default_timer()
+# 		c = func(c1)
+# 		elapsed_time = timeit.default_timer() - start_time
+# 		result = c.Decrypt(prikey)
+# 		passed = "PASS" if (result == (func(i) & 1)) else "FAIL"
+# 		print "Test " + circuit + ": " + passed
+# 		print "In " + str(elapsed_time) + " seconds"
 
-ei2 = [(fhe.Encrypt(i[0], prikey), fhe.Encrypt(i[1], prikey)) for i in inputs2]
+# ei2 = [(fhe.Encrypt(i[0], prikey), fhe.Encrypt(i[1], prikey)) for i in inputs2]
 
-for circuit in circuits2:
-	for i in range(len(inputs2)):
-		c1, c2 = ei2[i]
-		i = inputs2[i]
-		func = getattr(operator, circuit)
-		start_time = timeit.default_timer()
-		c = func(c1, c2)
-		elapsed_time = timeit.default_timer() - start_time
-		result = c.Decrypt(prikey)
-		passed = "PASS" if (result == func(i[0], i[1])) else "FAIL"
-		print "Test " + circuit + ": " + passed
-		print "In " + str(elapsed_time) + " seconds"
+# for circuit in circuits2:
+# 	for i in range(len(inputs2)):
+# 		c1, c2 = ei2[i]
+# 		i = inputs2[i]
+# 		func = getattr(operator, circuit)
+# 		start_time = timeit.default_timer()
+# 		c = func(c1, c2)
+# 		elapsed_time = timeit.default_timer() - start_time
+# 		result = c.Decrypt(prikey)
+# 		passed = "PASS" if (result == func(i[0], i[1])) else "FAIL"
+# 		print "Test " + circuit + ": " + passed
+# 		print "In " + str(elapsed_time) + " seconds"
 
-# Encryption & Decryption
-msg = random.randint(0,1)
-ctxt = fhe.Encrypt(msg, prikey)
-print "Encrypted message : ", msg
-msg = fhe.Decrypt(ctxt, prikey)
-print "Decrypted message : ", msg
+# # Encryption & Decryption
+# msg = random.randint(0,1)
+# ctxt = fhe.Encrypt(msg, prikey)
+# print "Encrypted message : ", msg
+# msg = fhe.Decrypt(ctxt, prikey)
+# print "Decrypted message : ", msg
 
-# Homomorphic Evaulations
-# AND
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-start_time = timeit.default_timer()
-c = c1 & c2
-elapsed = timeit.default_timer() - start_time
-result = c.Decrypt(prikey)
-print m1, " & " , m2, " = ", result
-print elapsed, " sec"
+# # Homomorphic Evaulations
+# # AND
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# start_time = timeit.default_timer()
+# c = c1 & c2
+# elapsed = timeit.default_timer() - start_time
+# result = c.Decrypt(prikey)
+# print m1, " & " , m2, " = ", result
+# print elapsed, " sec"
 
-# XOR
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 ^  c2
-result = c.Decrypt(prikey)
-print m1, " ^ " , m2, " = ", result
+# # XOR
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 ^  c2
+# result = c.Decrypt(prikey)
+# print m1, " ^ " , m2, " = ", result
 
-# OR
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 | c2
-result = c.Decrypt(prikey)
-print m1, " | " , m2, " = ", result
+# # OR
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 | c2
+# result = c.Decrypt(prikey)
+# print m1, " | " , m2, " = ", result
 
-# NOT
-m1 = random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c = ~c1
-result = c.Decrypt(prikey)
-print "~", m1, " = ", result
+# # NOT
+# m1 = random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c = ~c1
+# result = c.Decrypt(prikey)
+# print "~", m1, " = ", result
 
-# COMPARE
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 < c2
-result = c.Decrypt(prikey)
-print m1, " < " , m2, " = ", result
+# # COMPARE
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 < c2
+# result = c.Decrypt(prikey)
+# print m1, " < " , m2, " = ", result
 
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 <= c2
-result = c.Decrypt(prikey)
-print m1, " <= " , m2, " = ", result
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 <= c2
+# result = c.Decrypt(prikey)
+# print m1, " <= " , m2, " = ", result
 
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 == c2
-result = c.Decrypt(prikey)
-print m1, " == " , m2, " = ", result
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 == c2
+# result = c.Decrypt(prikey)
+# print m1, " == " , m2, " = ", result
 
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 != c2
-result = c.Decrypt(prikey)
-print m1, " != " , m2, " = ", result
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 != c2
+# result = c.Decrypt(prikey)
+# print m1, " != " , m2, " = ", result
 
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 > c2
-result = c.Decrypt(prikey)
-print m1, " > " , m2, " = ", result
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 > c2
+# result = c.Decrypt(prikey)
+# print m1, " > " , m2, " = ", result
 
-m1, m2 = random.randint(0,1), random.randint(0,1)
-c1 = fhe.Encrypt(m1, prikey)
-c2 = fhe.Encrypt(m2, prikey)
-c = c1 >= c2
-result = c.Decrypt(prikey)
-print m1, " >= " , m2, " = ", result
+# m1, m2 = random.randint(0,1), random.randint(0,1)
+# c1 = fhe.Encrypt(m1, prikey)
+# c2 = fhe.Encrypt(m2, prikey)
+# c = c1 >= c2
+# result = c.Decrypt(prikey)
+# print m1, " >= " , m2, " = ", result
 
-# Multibit Evaluations
+# # Multibit Evaluations
 
-# Bitwise AND
-length = 4
-m1, m2 = random.getrandbits(length), random.getrandbits(length)
-c1 = fhe.Encrypt(m1, prikey, length)
-c2 = fhe.Encrypt(m2, prikey, length)
-start_time = timeit.default_timer()
-c = c1 & c2
-elapsed = timeit.default_timer() - start_time
-result = c.Decrypt(prikey)
-print m1, " & " , m2, " = ", result
-print elapsed, " sec"
+# # Bitwise AND
+# length = 4
+# m1, m2 = random.getrandbits(length), random.getrandbits(length)
+# c1 = fhe.Encrypt(m1, prikey, length)
+# c2 = fhe.Encrypt(m2, prikey, length)
+# start_time = timeit.default_timer()
+# c = c1 & c2
+# elapsed = timeit.default_timer() - start_time
+# result = c.Decrypt(prikey)
+# print m1, " & " , m2, " = ", result
+# print elapsed, " sec"
