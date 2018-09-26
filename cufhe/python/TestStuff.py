@@ -28,15 +28,17 @@ fhe.Init(pubkey)
 
 c1 = fhe.test0(pubkey)
 c2 = fhe.test0(pubkey)
-c3 = fhe.test0(pubkey)
-c4 = fhe.test0(pubkey)
+# c3 = fhe.test0(pubkey)
+# c4 = fhe.test0(pubkey)
+
+c1 = c1*c2
 
 p1 = c1.Decrypt(prikey)
 p2 = c2.Decrypt(prikey)
-p3 = c3.Decrypt(prikey)
-p4 = c4.Decrypt(prikey)
+# p3 = c3.Decrypt(prikey)
+# p4 = c4.Decrypt(prikey)
 
 print(p1)
 print(p2)
-print(p3)
-print(p4)
+# print(p3)
+# print(p4)

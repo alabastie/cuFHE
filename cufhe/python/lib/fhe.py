@@ -308,57 +308,34 @@ class CtxtList:
 		return result
 
 	# ripple carry adder
-	def __add__(self, other):
-		x = CtxtList(len(self.ctxts_), self.pubkey_)    # temporaries
-		y = CtxtList(len(self.ctxts_), self.pubkey_)
-		z = CtxtList(len(self.ctxts_), self.pubkey_)
-		c = CtxtList(len(self.ctxts_), self.pubkey_)    # carry
-		r = CtxtList(len(self.ctxts_), self.pubkey_)    # result
-		st = [Stream().Create() for i in range(2*len(self.ctxts_))]
-
-		Synchronize()
-
-		if use_gpu:
-			XOR(r.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[0], self.pubkey_)
-			AND(c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_)
-		else:
-			p1 = Process(target =XOR, args = (r.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[0], self.pubkey_))
-			p2 = Process(target =AND, args = (c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_))
-			p1.start()
-			p2.start()
-			p1.join()
-			p2.join()
-   
-		Synchronize()
-#		.........................This is where we would call the two functions an implement them into the pool...................
-		if use_gpu:
-			for i in range(1, len(self.ctxts_)):
-				XOR(x.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i], self.pubkey_)
-				AND(y.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i+1], self.pubkey_)
-		else:#creates a pool and then put its in a map to compute the for loop
-			p = Pool()
-			p.map(SynchFor, self.ctxts_)
-			p.close()
-			p.join()
-
-
-		Synchronize()
-		for i in range(1, len(self.ctxts_)):
-			AND(z.ctxts_[i-1].ctxt_, x.ctxts_[i].ctxt_, c.ctxts_[i-1].ctxt_, st[0], self.pubkey_)
-			XOR(r.ctxts_[i].ctxt_, x.ctxts_[i].ctxt_, c.ctxts_[i-1].ctxt_, st[1], self.pubkey_)
-			#aboe two can use a map
-			#we need some way to break this up or somehow figure out a way to make synchronize work for our shit
-			Synchronize()
-			OR(c.ctxts_[i].ctxt_, z.ctxts_[i-1].ctxt_, y.ctxts_[i].ctxt_, st[0], self.pubkey_)
-			Synchronize()
-		return r
+    def __add__(self, other):
+        x = CtxtList(len(self.ctxts_), self.pubkey_)    # temporaries
+        y = CtxtList(len(self.ctxts_), self.pubkey_)
+        z = CtxtList(len(self.ctxts_), self.pubkey_)
+        c = CtxtList(len(self.ctxts_), self.pubkey_)    # carry
+        r = CtxtList(len(self.ctxts_), self.pubkey_)    # result
+        st = [Stream().Create() for i in range(2*len(self.ctxts_))]
+        Synchronize()
+        XOR(r.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[0], self.pubkey_)
+        AND(c.ctxts_[0].ctxt_, self.ctxts_[0].ctxt_, other.ctxts_[0].ctxt_, st[1], self.pubkey_)
+        for i in range(1, len(self.ctxts_)):
+            XOR(x.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i], self.pubkey_)
+            AND(y.ctxts_[i].ctxt_, self.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_, st[2*i+1], self.pubkey_)
+        Synchronize()
+        for i in range(1, len(self.ctxts_)):
+            AND(z.ctxts_[i-1].ctxt_, x.ctxts_[i].ctxt_, c.ctxts_[i-1].ctxt_, st[0], self.pubkey_)
+            XOR(r.ctxts_[i].ctxt_, x.ctxts_[i].ctxt_, c.ctxts_[i-1].ctxt_, st[1], self.pubkey_)
+            Synchronize()
+            OR(c.ctxts_[i].ctxt_, z.ctxts_[i-1].ctxt_, y.ctxts_[i].ctxt_, st[0], self.pubkey_)
+            Synchronize()
+        return r
 
 	def __mul__(self, other):
 		temp = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero = True) for i in range(len(self.ctxts_))]
 
-		for i in range (len(self.ctxt)):
-			for j in range (len(self.ctxt)):
-				AND(temp[i][j+i].ctxt_, self.ctxts_[j].ctxt_, other.ctxts_[i].ctxt_, None, self.pubkey_)
+		for i in range (len(self.ctxts_)):
+			for j in range (len(self.ctxts_)):
+				AND(temp[i].ctxts_[j+i].ctxt_, self.ctxts_[j].ctxt_, other.ctxts_[i].ctxt_, None, self.pubkey_)
 
 	 
 		for i in range (1, len(self.ctxt)) :
