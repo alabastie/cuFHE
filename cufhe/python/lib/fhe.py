@@ -330,18 +330,86 @@ class CtxtList:
             Synchronize()
         return r
 
-	def __mul__(self, other):
-		temp = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero = True) for i in range(len(self.ctxts_))]
+    def __mul__(self, other):
+        temp = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero=True) for i in range(len(self.ctxts_))]
+        st = [Stream().Create() for i in range(len(self.ctxts_))]
 
-		for i in range (len(self.ctxts_)):
-			for j in range (len(self.ctxts_)):
-				AND(temp[i].ctxts_[j+i].ctxt_, self.ctxts_[j].ctxt_, other.ctxts_[i].ctxt_, None, self.pubkey_)
+        Synchronize()
 
-	 
-		for i in range (1, len(self.ctxt)) :
-			temp[0] = temp[0] + temp[i]
+        for i in range (len(self.ctxts_)):
+            for j in range (len(self.ctxts_)):
+                AND(temp[i].ctxts_[j+i].ctxt_, self.ctxts_[j].ctxt_, other.ctxts_[i].ctxt_, st[j], self.pubkey_)
+                Synchronize()
 
-		return temp[0]
+        for i in range (1, len(self.ctxts_)) :
+            temp[0] = temp[0] + temp[i]
+            Synchronize()
+
+        return temp[0]
+
+
+       # Notes to Keith: 
+       #
+       # so just double check me on the length of for loops, they may beed to be one less than they are
+       # AKA an-1 and bn-1.
+       #
+       #
+       # For the last row, we have to switch up our direction of adding from going left->right to going right->left
+       # There is definitely probably some errors with which carry i am adding the product with, but i hope that 
+       # at least this basicly psudo code will give the basic guideline on how this is done
+       # 
+       #
+       # For the Final Prodcut values (P0-9 in the book), for the main loops the values going from LSB -> MSB will be 
+       # product[an].ctxts_[j].ctxt, so gettign a new value once every row (just look at the diagram in book),
+       # it is just the last product that is calculated in each row. 
+       #
+       # However, for the final line of code, the way I have it set up is using a different variable to hold 
+       # those final values, mostly because it is late and I can't think too great. we will have to find a way to combine them
+       # into one final variable.ctxts_
+       #
+       #
+       #
+       #If there are any questions, just text me I'll probably be up or watiing in the doctor's office
+
+
+
+
+
+
+	def__mul__(self, other):
+		temp = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero=True) for i in range(len(self.ctxts_))]
+		temp2 = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero=True) for i in range(len(self.ctxts_))] #temp can just be a single ctxt it doesnt need to itterate with i
+		carryin = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero=True) for i in range(len(self.ctxts_))]
+		product = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero=True) for i in range(len(self.ctxts_))] #this needs to be length of other 
+		st = [Stream().Create() for i in range(len(self.ctxts_))]
+
+		an = len(self.ctxts_)
+		bn = len(other.ctxts_)
+
+#initializing the first products for the first row
+		for i in range(an)
+			AND(product[i].ctxts_[0].ctxt_, self[an-i].ctxts_, other[0].ctxts_, self.pubkey_) # makes all the first row input products
+
+
+		for j in range(bn):
+
+			AND(product[0].ctxts_[j].ctxt_, self[an].ctxts_, other[j].ctxts_, self.pubkey_) #the far left product
+
+			for i in range (an):
+				
+				AND(temp2[i].ctxts_, self[an-1-i].ctxts_, other[j+1].ctxts_, self.pubkey_)
+				carryin[i].ctxts_ = product[i].ctxts_ [j].ctxt_+ temp2[i].ctxts_
+				product[i+1].ctxts_[j+1].ctxt_ = product[i].ctxts_[j].ctxt_ + temp2[i].ctxts_
+
+		#----This is the last row ----
+		AND(product[an].ctxts_[bn].ctxt_, self[an].ctxts_, other[bn].ctxts_, self.pubkey_) #the last product coming in from the left
+
+		for i in range(an):
+			productFinal[i].ctxt = product[an-i].ctxts_[bn] + carryin[i].ctxts_[bn] #this just adds the product (from LSB to MSB this time) with the carry in from the previous value
+			carryin[i].ctxts_[bn+1] = product[an-i].ctxts_[bn] + carryin[i].ctxts_[bn]#this is the carry out addition; still need to figure that out.
+			#productFinal is the bottom product values, in the textbook that is P5, where productFinal[0] is P5 and productFinal[an] is P9
+
+
 
 def test0 (pubkey_):
 	c = Ctxt(pubkey = pubkey_, zero = True)
