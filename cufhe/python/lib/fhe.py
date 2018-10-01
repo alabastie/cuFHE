@@ -165,6 +165,12 @@ def NOT(result, input1, stream=None):
 	else:
 		fhe.NOT(result, input1)
 
+def Copy(result, input1, stream=None):
+    if use_gpu:
+        fhe.Copy(result, input1, stream)
+    else:
+        fhe.Copy(result, input1)
+
 
 class Stream:
 	def __init__(self):
@@ -183,16 +189,14 @@ class Stream:
 
 
 class Ctxt:
-	def __init__(self, pubkey=None, zero = False):
-		self.ctxt_ = fhe.Ctxt()
-		self.pubkey_ = pubkey
-		if zero:
-			ctxt_2 = Ctxt(self.pubkey_)
-			print(self.pubkey_)
-			print (ctxt_2.pubkey_)
-			NOT(ctxt_2.ctxt_, self.ctxt_)	#I know that i cant do the .ctxt_2 thing but its just supposed to be a temp variable
-			print type(self.pubkey_)
-			AND(self.ctxt_, self.ctxt_, ctxt_2.ctxt_, pubkey = pubkey)
+	def __init__(self, pubkey=None, zero=False):
+        self.ctxt_ = fhe.Ctxt()
+        self.pubkey_ = pubkey
+        if zero:
+            ctxt1 = Ctxt(pubkey)
+            ctxt2 = ~ctxt1
+            result = ctxt1 & ctxt2
+            Copy(self.ctxt_, result.ctxt_, Stream().Create())
 
 	def Decrypt(self, prikey):
 		return Decrypt(self, prikey)
@@ -329,6 +333,33 @@ class CtxtList:
             OR(c.ctxts_[i].ctxt_, z.ctxts_[i-1].ctxt_, y.ctxts_[i].ctxt_, st[0], self.pubkey_)
             Synchronize()
         return r
+
+
+
+
+    def __sub__(self, other):
+    	a = CtxtList(len(self.ctxts_), self.pubkey, zero= zero)
+    	r = CtxtList(len(self.ctxts_), self.pubkey_)    # result
+    	yn = CtxtList(len(self.ctxts_), self.pubkey_)	#holder for the post invertion plus 1
+
+
+    	z = CtxtList(len(other.ctxts_), self.pubkey_)    # temp
+
+
+    	for i in range (n):				#incert the subtratcting element
+    		NOT(z.ctxts_[i], other.ctxts_[i])
+
+    	NOT(a.ctxts_[0], a.ctxts_[0])
+
+    	yn.ctxts_ = z.ctxts_ + a.ctxts_
+
+    	r.ctxts_ = self.ctxts_ + yn.ctxts_
+
+    	return r.ctxts_
+
+
+
+
 
     def __mul__(self, other):
         temp = [CtxtList(2*len(self.ctxts_), self.pubkey_, zero=True) for i in range(len(self.ctxts_))]
