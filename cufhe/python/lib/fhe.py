@@ -100,7 +100,16 @@ def Decrypt(ctxt, prikey):
 		for c in reversed(ctxt.ctxts_):
 			fhe.Decrypt(ptxt, c.ctxt_, prikey)
 			ptxt_list += str(ptxt.message)
-		return int(ptxt_list, 2)
+		int(ptxt_list, 2)
+
+		l = len(ptxt_list)
+		if ptxt_list[l] == 1:
+			for i in range (l):
+				ptxt_list[i] = ~ptxt_list[i]
+
+		return ptxt_list
+
+
 
 def SetSeed():
 	fhe.SetSeed(int(time.time()))
@@ -338,7 +347,7 @@ class CtxtList:
 
 
     def __sub__(self, other):
-    	a = CtxtList(len(self.ctxts_), self.pubkey, zero= zero)
+    	a = CtxtList(len(self.ctxts_), self.pubkey_, zero= zero)
     	r = CtxtList(len(self.ctxts_), self.pubkey_)    # result
     	yn = CtxtList(len(self.ctxts_), self.pubkey_)	#holder for the post invertion plus 1
 
@@ -347,16 +356,16 @@ class CtxtList:
 
 
     	for i in range (n):				#incert the subtratcting element
-    		NOT(z.ctxts_[i], other.ctxts_[i])
+    		NOT(z.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_)
 
-    	NOT(a.ctxts_[0], a.ctxts_[0])
+    	NOT(a.ctxts_[0].ctxt_, a.ctxts_[0].ctxt_)
 
 
-    	yn.ctxts_ = z.ctxts_ + a.ctxts_
+    	yn = z + a
 
-    	r.ctxts_ = self.ctxts_ + yn.ctxts_
+    	r = self + yn
 
-    	return r.ctxts_
+    	return r
 
 
 
