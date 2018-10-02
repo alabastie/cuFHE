@@ -100,15 +100,16 @@ def Decrypt(ctxt, prikey):
 		for c in reversed(ctxt.ctxts_):
 			fhe.Decrypt(ptxt, c.ctxt_, prikey)
 			ptxt_list += str(ptxt.message)
-		int(ptxt_list, 2)
 
+		int(ptxt_list, 2)
+		#Check for if it is a negative number
 		l = len(ptxt_list)
+
 		if ptxt_list[l] == 1:
 			for i in range (l):
 				ptxt_list[i] = ~ptxt_list[i]
 
 		return ptxt_list
-
 
 
 def SetSeed():
