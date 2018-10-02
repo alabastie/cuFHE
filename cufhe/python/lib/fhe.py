@@ -89,6 +89,19 @@ def Encrypt(ptxt, prikey, count=1, pubkey=None):
 			fhe.Encrypt(ct.ctxts_[count - i - 1].ctxt_, ptxt, prikey)
 		return ct
 
+#def Decrypt(ctxt, prikey):
+    # ptxt = fhe.Ptxt()
+    # if isinstance(ctxt, Ctxt):
+    #     fhe.Decrypt(ptxt, ctxt.ctxt_, prikey)
+    #     return ptxt.message
+
+    # if isinstance(ctxt, CtxtList):
+    #     ptxt_list = ""
+    #     for c in reversed(ctxt.ctxts_):
+    #         fhe.Decrypt(ptxt, c.ctxt_, prikey)
+    #         ptxt_list += str(ptxt.message)
+    #     return int(ptxt_list, 2)
+
 def Decrypt(ctxt, prikey):
 	ptxt = fhe.Ptxt()
 	if isinstance(ctxt, Ctxt):
@@ -100,7 +113,20 @@ def Decrypt(ctxt, prikey):
 		for c in reversed(ctxt.ctxts_):
 			fhe.Decrypt(ptxt, c.ctxt_, prikey)
 			ptxt_list += str(ptxt.message)
+<<<<<<< Updated upstream
 		return int(ptxt_list, 2)
+=======
+
+		int(ptxt_list, 2)
+		#Check for if it is a negative number
+		l = len(ptxt_list)
+
+		if ptxt_list[l-1] == 1:
+			for i in range (l):
+				ptxt_list[i] = ~ptxt_list[i]
+
+		return ptxt_list
+>>>>>>> Stashed changes
 
 def SetSeed():
 	fhe.SetSeed(int(time.time()))
@@ -409,6 +435,45 @@ class CtxtList:
 			productFinal[i].ctxt = product[an-i].ctxts_[bn] + carryin[i].ctxts_[bn] #this just adds the product (from LSB to MSB this time) with the carry in from the previous value
 			carryin[i].ctxts_[bn+1] = product[an-i].ctxts_[bn] + carryin[i].ctxts_[bn]#this is the carry out addition; still need to figure that out.
 			#productFinal is the bottom product values, in the textbook that is P5, where productFinal[0] is P5 and productFinal[an] is P9
+
+ #   def __sub__(self, other):
+ #   	invert = CtxtList(len(self.ctxts_), self.pubkey_)
+ #   	two_comp = CtxtList(len(self.ctxts_), self.pubkey_)
+ #   	one = CtxtList(len(self.ctxts_), self.pubkey_)
+ #   	z = CtxtList(len(self.ctxts_), self.pubkey_)
+
+#    	for i in range (1, len(other.ctxts_)):
+#    		NOT(invert.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_)
+
+    	#one = 1;
+ #   	en = Encrypt(one, 1, self.prikey)
+ #   	two_comp = invert + en
+ #   	z = two_comp + self
+
+ #   	return z
+
+
+    def __sub__(self, other):
+    	a = CtxtList(len(self.ctxts_), self.pubkey_, zero= True)
+    	r = CtxtList(len(self.ctxts_), self.pubkey_)    # result
+    	yn = CtxtList(len(self.ctxts_), self.pubkey_)	#holder for the post invertion plus 1
+
+
+    	z = CtxtList(len(other.ctxts_), self.pubkey_)    # temp
+
+
+    	for i in range (len(other.ctxts_)):				#incert the subtratcting element
+    		NOT(z.ctxts_[i].ctxt_, other.ctxts_[i].ctxt_)
+
+    	NOT(a.ctxts_[0].ctxt_, a.ctxts_[0].ctxt_)
+
+    	yn = z + a
+
+    	r = self + yn
+
+    	return r
+
+
 
 
 
