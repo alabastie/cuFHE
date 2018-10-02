@@ -351,6 +351,7 @@ class CtxtList:
 
     	NOT(a.ctxts_[0], a.ctxts_[0])
 
+
     	yn.ctxts_ = z.ctxts_ + a.ctxts_
 
     	r.ctxts_ = self.ctxts_ + yn.ctxts_
