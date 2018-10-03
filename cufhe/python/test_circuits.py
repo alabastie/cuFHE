@@ -57,7 +57,7 @@ for length in range(2, 31):
 	elapsed = timeit.default_timer() - start_time
 	result = c.Decrypt(prikey)
 	# print m1, " * " , m2, " = ", result
-	print result = m1 * m2
+	print result == m1 * m2
 	print elapsed, " sec"
 
 # ei1 = [fhe.Encrypt(i, prikey) for i in inputs1]
