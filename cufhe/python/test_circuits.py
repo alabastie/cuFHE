@@ -48,7 +48,7 @@ fhe.Init(pubkey)
 # else:
 # 	length = 4
 
-for length in range(2, 31):
+for length in range(3, 31):
 	m1, m2 = random.getrandbits(length), random.getrandbits(length)
 	c1 = fhe.Encrypt(m1, prikey, length)
 	c2 = fhe.Encrypt(m2, prikey, length)
@@ -56,7 +56,7 @@ for length in range(2, 31):
 	c = c1 * c2
 	elapsed = timeit.default_timer() - start_time
 	result = c.Decrypt(prikey)
-	# print m1, " * " , m2, " = ", result
+	print m1, " * " , m2, " = ", result
 	print result == m1 * m2
 	print elapsed, " sec"
 
