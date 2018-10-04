@@ -351,7 +351,7 @@ class CtxtList:
         t0 = CtxtList(slen, self.pubkey_)
         t1 = CtxtList(slen, self.pubkey_)
         t2 = CtxtList(slen, self.pubkey_)
-        st = [Stream().Create() for i in range(3*slen)]
+        st = [Stream().Create() for i in range(2*slen)]
 
         Synchronize()
 
@@ -366,19 +366,22 @@ class CtxtList:
         Synchronize()
 
         for i in range(1, slen-1):
-            XOR(a[i], a1[i+1], b[i], st[i*3], self.pubkey_)
-            AND(c[i], a1[i+1], b[i], st[i*3+1], self.pubkey_)
-            AND(b[i], self[i], other[2], st[i*3+2], self.pubkey_)
+            XOR(a[i], a1[i+1], b[i], st[i*2], self.pubkey_)
+            AND(c[i], a1[i+1], b[i], st[i*2+1], self.pubkey_)
 
         XOR(result[1], a1[1], b[0], st[0], self.pubkey_)
         AND(c[0], a1[1], b[0], st[1], self.pubkey_)
-        AND(b[0], self[0], other[2], st[2], self.pubkey_)
 
         AND(a[-1], self[-1], other[1], st[-1], self.pubkey_)
 
         Synchronize()
 
         for j in range(olen-2):
+
+            for i in range(slen-1):
+                AND(b[i], self[i], other[j+2], st[i], self.pubkey_)
+
+            Synchronize()
 
             for i in range(slen-1):
                 XOR(t0[i], a[i+1], b[i], st[i*2], self.pubkey_)
@@ -396,10 +399,6 @@ class CtxtList:
             Synchronize()
 
             AND(a[-1], self[-1], other[j+2], st[-1], self.pubkey_)
-
-            if (j < olen-3):
-                for i in range(slen-1):
-                    AND(b[i], self[i], other[j+3], st[i], self.pubkey_)
 
             for i in range(slen-1):
                 OR(c[i], t1[i], t2[i], st[i], self.pubkey_)
