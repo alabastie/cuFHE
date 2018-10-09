@@ -53,7 +53,8 @@ BOOST_PYTHON_MODULE(fhepy_gpu)
 		.add_property("message", &Ptxt::get, &Ptxt::set);
                 Ptxt_class.attr("PtxtSpace") = Ptxt::kPtxtSpace;
 
-        class_<Ctxt>("Ctxt", init< optional<bool> >());
+        class_<Ctxt>("Ctxt", init< optional<bool> >())
+        	.def();
 	class_<PubKey>("PubKey", init< optional<bool> >());
 	class_<PriKey>("PriKey", init< optional<bool> >());
 

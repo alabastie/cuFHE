@@ -111,7 +111,8 @@ struct Ctxt {
   MemoryDeleter lwe_sample_deleter_;
   LWESample* lwe_sample_device_;
   MemoryDeleter lwe_sample_device_deleter_;
-  std::mutex mtx;
+  std::mutex mtx_;
+  void wait() { mtx_.lock(); mtx_.unlock(); }
 };
 
 /** Plaintext is in {0, 1}. */
