@@ -109,6 +109,10 @@ int main() {
   // Here, pass streams to gates for parallel gates.
   for (int i = 0; i < kNumTests; i ++)
     Nand(ct[i], ct[i], ct[i + kNumTests]);
+  for (int i = 0; i < kNumTests; i ++) {
+    ct[i].mtx.lock();
+    ct[i].mtx.unlock();
+  }
   for (int i = 0; i < kNumTests; i ++)
     Or(ct[i], ct[i], ct[i + kNumTests], st[i % kNumSMs]);
   for (int i = 0; i < kNumTests; i ++)

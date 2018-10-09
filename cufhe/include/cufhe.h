@@ -32,6 +32,7 @@
 #include "cufhe_core.h"
 #include "details/allocator.h"
 #include <iostream>
+#include <mutex>
 #include <math.h>
 #include <time.h>
 
@@ -110,6 +111,7 @@ struct Ctxt {
   MemoryDeleter lwe_sample_deleter_;
   LWESample* lwe_sample_device_;
   MemoryDeleter lwe_sample_device_deleter_;
+  std::mutex mtx;
 };
 
 /** Plaintext is in {0, 1}. */

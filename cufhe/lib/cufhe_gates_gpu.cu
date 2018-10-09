@@ -59,7 +59,9 @@ inline void CtxtCopyD2H(const Ctxt& c, Stream st) {
 void Nand(Ctxt& out,
           const Ctxt& in0,
           const Ctxt& in1) {
-  std::thread(iNand, std::ref(out), std::ref(in0), std::ref(in1));
+  out.mtx.lock();
+  std::thread t(iNand, std::ref(out), std::ref(in0), std::ref(in1));
+  out.mtx.unlock();
 }
 
 void iNand(Ctxt& out,
