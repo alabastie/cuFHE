@@ -20,11 +20,15 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <thread>
+
 #include <include/cufhe.h>
 #include <include/cufhe_gpu.cuh>
 #include <include/bootstrap_gpu.cuh>
 
 namespace cufhe {
+
+void iNand(Ctxt& out, const Ctxt& in0, const Ctxt& in1);
 
 void Initialize(const PubKey& pub_key) {
   BootstrappingKeyToNTT(pub_key.bk_);
@@ -54,8 +58,15 @@ inline void CtxtCopyD2H(const Ctxt& c, Stream st) {
 
 void Nand(Ctxt& out,
           const Ctxt& in0,
-          const Ctxt& in1,
-          Stream st) {
+          const Ctxt& in1) {
+  std::thread(iNand, std::ref(out), std::ref(in0), std::ref(in1));
+}
+
+void iNand(Ctxt& out,
+          const Ctxt& in0,
+          const Ctxt& in1) {
+  Stream st;
+  st.Create();
   static const Torus mu = ModSwitchToTorus(1, 8);
   static const Torus fix = ModSwitchToTorus(1, 8);
   CtxtCopyH2D(in0, st);
@@ -63,6 +74,7 @@ void Nand(Ctxt& out,
   NandBootstrap(out.lwe_sample_device_, in0.lwe_sample_device_,
       in1.lwe_sample_device_, mu, fix, st.st());
   CtxtCopyD2H(out, st);
+  cudaStreamSynchronize(st.st());
 }
 
 void Or(Ctxt& out,
