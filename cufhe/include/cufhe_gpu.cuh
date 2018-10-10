@@ -66,6 +66,12 @@ private:
   cudaStream_t st_;
 }; // class Stream
 
+/**
+ * \brief Synchronize with stream.
+ * \details This makes it easy to wrap in python.
+ */
+inline void StreamSynchronize(Stream st) { cudaStreamSynchronize(st.st()); };
+
 void And (Ctxt& out, const Ctxt& in0, const Ctxt& in1, Stream st = 0);
 void Or  (Ctxt& out, const Ctxt& in0, const Ctxt& in1, Stream st = 0);
 void Nand(Ctxt& out, const Ctxt& in0, const Ctxt& in1, Stream st = 0);

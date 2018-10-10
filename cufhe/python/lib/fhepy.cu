@@ -66,6 +66,7 @@ BOOST_PYTHON_MODULE(fhepy_gpu)
 	def("Initialize", Initialize);
 	def("CleanUp", CleanUp);
 	def("Synchronize", Synchronize);
+	def("StreamSynchronize", StreamSynchronize);
 
 	/* GPU GATES */
 	def("AND", And);
