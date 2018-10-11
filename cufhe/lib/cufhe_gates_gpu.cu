@@ -144,4 +144,28 @@ void Copy(Ctxt& out,
     out.lwe_sample_->data()[i] = in.lwe_sample_->data()[i];
 }
 
+void Fa(Ctxt& z, Ctxt& cout, const Ctxt& a, const Ctxt& b, const Ctxt& cin) {
+
+    Ctxt zh;
+    Ctxt chold;
+    Ctxt cduh;
+   // Stream* st[2]= new Stream();
+    Stream st1;
+    Stream st2;
+    st1.Create();
+    st2.Create();
+      //block 1
+      Xor(zh, a, b, st1); 
+      And(chold, a, b, st2);
+      StreamSynchronize(st1);
+      //block 2
+      Xor(z, cin, zh, st1);
+      And(cduh, zh, cin, st2);
+      StreamSynchronize(st2);
+      //block 3
+      Or(cout, cduh, chold, st2);
+      StreamSynchronize(st2);
+
+}
+
 } // namespace cufhe

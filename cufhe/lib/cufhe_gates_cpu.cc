@@ -120,4 +120,20 @@ void Copy(Ctxt& out,
     out.lwe_sample_->data()[i] = in.lwe_sample_->data()[i];
 }
 
+void Fa(Ctxt& z, Ctxt& cout, const Ctxt& a, const Ctxt& b, const Ctxt& cin, const PubKey& pub_key) {
+
+    Ctxt zh;
+    Ctxt chold;
+    Ctxt cduh;
+
+      //block 1
+      Xor(zh, a, b, pub_key); 
+      And(chold, a, b, pub_key);
+      //block 2
+      Xor(z, cin, zh, pub_key);
+      And(cduh, zh, cin, pub_key);
+      //block 3
+      Or(cout, cduh, chold, pub_key);
+
+}
 } // namespace cufhe
