@@ -84,4 +84,12 @@ void Copy(Ctxt& out, const Ctxt& in, Stream st = 0);
 // void Mux(Ctxt& out, const Ctxt& in0, const Ctxt& in1, const Ctxt& in2,
 //          cudaStream_t st = 0);
 
+// Arithmetic Operations
+
+// Full adder
+void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b);
+
+// Full adder with carry in
+void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b, Ctxt& ci);
+
 } // namespace cufhe

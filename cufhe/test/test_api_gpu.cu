@@ -141,6 +141,11 @@ int main() {
     cout<< "PASS" <<endl;
   else
     cout<< "FAIL:\t" << cnt_failures << "/" << kNumTests <<endl;
+
+  for (int i = 0; i < 8; i++) {
+    FA(ct[i], ct[i+8], ct[i], ct[i+8], ct[i+16]);
+  }
+
   for (int i = 0; i < kNumSMs; i ++)
     st[i].Destroy();
   delete [] st;

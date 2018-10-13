@@ -77,15 +77,6 @@ $(DIR_OBJ)/test/test_api_gpu.o: test/test_api_gpu.cu
 	$(CU) $(FLAGS) $(CU_FLAGS) $(INC) -M -o $(@:%.o=%.d) $<
 	$(CU) $(FLAGS) $(CU_FLAGS) $(INC) -c -o $@ $<
 
-$(DIR_BIN)/test_streamsync: $(DIR_OBJ)/test/test_streamsync.o
-	$(dir_guard)
-	$(CU) $(FLAGS) $(CU_FLAGS) -o $@ $(DIR_OBJ)/test/test_streamsync.o -L$(DIR_BIN) -lcufhe_gpu
-
-$(DIR_OBJ)/test/test_streamsync.o: test/test_streamsync.cu
-	$(dir_guard)
-	$(CU) $(FLAGS) $(CU_FLAGS) $(INC) -M -o $(@:%.o=%.d) $<
-	$(CU) $(FLAGS) $(CU_FLAGS) $(INC) -c -o $@ $<
-
 $(DIR_BIN)/libcufhe_cpu.so: $(CC_OBJ)
 	$(dir_guard)
 	$(CU) $(FLAGS) $(CU_FLAGS) -shared -o $@ $(CC_OBJ)

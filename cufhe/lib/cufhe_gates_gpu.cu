@@ -144,4 +144,46 @@ void Copy(Ctxt& out,
     out.lwe_sample_->data()[i] = in.lwe_sample_->data()[i];
 }
 
+void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b) {
+  Stream s0, s1;
+
+  s0.Create();
+  s1.Create();
+
+  Xor(z, a, b, s0);
+  And(co, a, b, s1);
+
+  StreamSynchronize(s0);
+  StreamSynchronize(s1);
+
+  s0.Destroy();
+  s1.Destroy();
+}
+
+void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b, Ctxt& ci) {
+  Stream s0, s1;
+  Ctxt t0, t1;
+
+  s0.Create();
+  s1.Create();
+
+  Xor(t0, a, b, s0);
+  And(t1, a, b, s1);
+
+  StreamSynchronize(s0);
+
+  And(t1, t0, ci, s0);
+  Xor(z, t0, ci, s1);
+
+  StreamSynchronize(s0);
+
+  Or(co, t1, t0, s0);
+
+  StreamSynchronize(s0);
+  StreamSynchronize(s1);
+
+  s0.Destroy();
+  s1.Destroy();
+}
+
 } // namespace cufhe
