@@ -27,6 +27,9 @@ using namespace cufhe;
 #include <iostream>
 using namespace std;
 
+#include <chrono>
+using namespace std::chrono;
+
 void NandCheck(Ptxt& out, const Ptxt& in0, const Ptxt& in1) {
   out.message_ = 1 - in0.message_ * in1.message_;
 }
@@ -142,9 +145,17 @@ int main() {
   else
     cout<< "FAIL:\t" << cnt_failures << "/" << kNumTests <<endl;
 
+  cout<< "------ Test Full Adder ------" <<endl;
+
+  auto t1 = std::chrono::high_resolution_clock::now();
+
   for (int i = 0; i < 8; i++) {
     FA(ct[i], ct[i+8], ct[i], ct[i+8], ct[i+16]);
   }
+
+  auto t2 = std::chrono::high_resolution_clock::now();
+  duration<double> time_span = duration_cast<duration<double>>(t2 - t1);
+  cout<<time_span.count()<<" ms / addition"<<endl;
 
   for (int i = 0; i < kNumSMs; i ++)
     st[i].Destroy();
