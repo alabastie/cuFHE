@@ -87,9 +87,9 @@ void Copy(Ctxt& out, const Ctxt& in, Stream st = 0);
 // Arithmetic Operations
 
 // Full adder
-void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b);
+void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b, Stream st);
 
 // Full adder with carry in
-void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b, Ctxt& ci);
+void FA(Ctxt& z, Ctxt& co, Ctxt& a, Ctxt& b, Ctxt& ci, Stream st);
 
 } // namespace cufhe

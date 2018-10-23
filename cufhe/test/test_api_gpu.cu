@@ -150,7 +150,7 @@ int main() {
   auto t1 = std::chrono::high_resolution_clock::now();
 
   for (int i = 0; i < 8; i++) {
-    FA(ct[i], ct[i+8], ct[i], ct[i+8], ct[i+16]);
+    FA(ct[i], ct[i+8], ct[i], ct[i+8], ct[i+16], st[i]);
   }
 
   auto t2 = std::chrono::high_resolution_clock::now();
