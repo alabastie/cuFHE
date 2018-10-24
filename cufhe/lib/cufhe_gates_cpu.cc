@@ -136,4 +136,36 @@ void Fa(Ctxt& z, Ctxt& cout, const Ctxt& a, const Ctxt& b, const Ctxt& cin, cons
       Or(cout, cduh, chold, pub_key);
 
 }
+
+void Sub(Ctxt& z, const Ctxt* a, const lna, const Ctxt* b, const lnb, const PubKey& pub_key){
+    
+    Ctxt* compct = new Ctxt[lnb];//need to find way to initialize to 0
+    
+    intzero(compct, lnb, pub_key);
+
+    for(int i = 0; i < lnb; i++){ //invert all of b
+      Not(compct, b[i]);
+    }
+
+    Not(compct[0], compct[0], pub_key); //get a value of exactly 1
+
+    b = b + compct;         // finish 2's compliment by adding 1
+    z = a + b; //do the final addition 
+}
+
+void intzero(Ctxt* ct, const int ln, const Pubkey& pub_key){
+
+    Ctxt* ct1 = new Ctxt[ln];
+
+    for(int i =0; i< ln; i++){          //NOT the input cypher text, store in holder variable 
+      Not(ct1[i], ct[i],);
+  }
+    for(int i =0; i< ln; i++){          //AND it to itself, making the whole value 0
+      And(ct[i], ct1[i], ct[i], pub_key);
+      //blah blah blah
+  }
+
+}
+
+
 } // namespace cufhe
