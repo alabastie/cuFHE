@@ -105,12 +105,11 @@ def Decrypt(ctxt, prikey):
 		#Check for if it is a negative number
 		l = len(ptxt_list)
 
-		if ptxt_list[l] == 1:
+		if ptxt_list[l-1] == 1:
 			for i in range (l):
 				ptxt_list[i] = ~ptxt_list[i]
 
-		return ptxt_list
-
+		return int(ptxt_list, )
 
 def SetSeed():
 	fhe.SetSeed(int(time.time()))
